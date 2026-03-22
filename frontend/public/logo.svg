@@ -1,0 +1,13 @@
+<svg width="320" height="56" viewBox="0 0 320 56" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Stretching brackets -->
+  <path d="M8 8 L2 8 L2 48 L8 48" stroke="#C8553D" stroke-width="2" stroke-linecap="round" fill="none"/>
+  <path d="M36 8 L42 8 L42 48 L36 48" stroke="#C8553D" stroke-width="2" stroke-linecap="round" fill="none"/>
+  <!-- Inner dots representing assets -->
+  <circle cx="15" cy="22" r="3" fill="#C8553D" opacity="0.9"/>
+  <circle cx="22" cy="28" r="3" fill="#C8553D" opacity="0.6"/>
+  <circle cx="29" cy="34" r="3" fill="#C8553D" opacity="0.4"/>
+  <!-- Wordmark -->
+  <text x="56" y="38" font-family="'Crimson Pro', Georgia, serif" font-size="32" font-weight="400" fill="#E8E4DC" letter-spacing="-0.3">
+    <tspan fill="#C8553D">Elastic</tspan><tspan fill="#E8E4DC">Lend</tspan>
+  </text>
+</svg>

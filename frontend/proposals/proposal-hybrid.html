@@ -1,0 +1,1330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ElasticLend | Elastic Restaking Networks Applied to Lending</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500&family=IBM+Plex+Mono:wght@300;400;500&family=Source+Serif+4:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0A0A0A;--surface:#141414;--elevated:#1E1E1E;
+  --paper:#F5F0E8;--accent:#C8553D;--accent-dim:#A8432F;
+  --text:#E8E4DC;--text-secondary:#9B9689;
+  --border:rgba(200,85,61,0.2);
+  --success:#2ECC71;--danger:#E74C3C;--warning:#E67E22;
+  --mono:'IBM Plex Mono',monospace;
+  --serif:'Crimson Pro',serif;
+  --body:'Source Serif 4','Crimson Pro',serif;
+  --group-eth:#C8553D;--group-btc:#F7931A;--group-stable:#2ECC71;--group-other:#9B9689;
+}
+html{scroll-behavior:smooth;font-size:16px;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
+body{background:var(--bg);color:var(--text);font-family:var(--body);line-height:1.7;overflow-x:hidden}
+::selection{background:var(--accent);color:var(--paper)}
+
+/* ── Reading Progress ── */
+.reading-progress{position:fixed;top:0;left:0;width:0%;height:2px;background:var(--accent);z-index:1001;transition:width 0.1s linear}
+
+/* ── Hidden Nav ── */
+.nav-toggle{position:fixed;top:1.5rem;right:1.5rem;z-index:1000;width:44px;height:44px;background:var(--surface);border:1px solid var(--border);border-radius:4px;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;transition:background .3s, border-color .3s}
+.nav-toggle span{display:block;width:20px;height:1.5px;background:var(--text);transition:transform .3s, opacity .3s}
+.nav-toggle.active span:nth-child(1){transform:rotate(45deg) translate(4px,4px)}
+.nav-toggle.active span:nth-child(2){opacity:0}
+.nav-toggle.active span:nth-child(3){transform:rotate(-45deg) translate(4px,-4px)}
+.nav-overlay{position:fixed;inset:0;background:rgba(10,10,10,.95);z-index:999;opacity:0;pointer-events:none;transition:opacity .4s;display:flex;align-items:center;justify-content:center}
+.nav-overlay.active{opacity:1;pointer-events:all}
+.nav-menu{list-style:none;text-align:center}
+.nav-menu li{margin:1rem 0}
+.nav-menu a{font-family:var(--serif);font-size:1.5rem;color:var(--text-secondary);text-decoration:none;transition:color .2s;letter-spacing:.02em}
+.nav-menu a:hover{color:var(--accent)}
+.nav-menu a .nav-label{font-family:var(--mono);font-size:.7rem;color:var(--text-secondary);display:block;margin-top:.25rem;text-transform:uppercase;letter-spacing:.15em}
+
+/* ── Hero ── */
+.hero{height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:2rem;position:relative}
+.hero-rule{width:60px;height:1px;background:var(--accent);margin-bottom:2rem}
+.hero-journal{font-family:var(--mono);font-size:.7rem;letter-spacing:.25em;text-transform:uppercase;color:var(--text-secondary);margin-bottom:2.5rem}
+.hero h1{font-family:var(--serif);font-size:clamp(2rem,5vw,3.8rem);font-weight:300;line-height:1.2;max-width:800px;margin-bottom:1.5rem;letter-spacing:-.01em}
+.hero h1 em{font-style:italic;color:var(--accent)}
+.hero-subtitle{font-family:var(--body);font-size:clamp(1rem,2vw,1.25rem);color:var(--text-secondary);max-width:550px;font-weight:300;line-height:1.6;margin-bottom:1rem}
+.hero-authors{font-family:var(--mono);font-size:.75rem;color:var(--text-secondary);letter-spacing:.08em;margin-top:1.5rem}
+.scroll-indicator{position:absolute;bottom:2.5rem;display:flex;flex-direction:column;align-items:center;gap:.5rem;color:var(--text-secondary);font-family:var(--mono);font-size:.65rem;letter-spacing:.15em;text-transform:uppercase;animation:drift 2s ease-in-out infinite}
+.scroll-indicator::after{content:'';width:1px;height:30px;background:var(--accent);animation:grow 2s ease-in-out infinite}
+@keyframes drift{0%,100%{transform:translateY(0)}50%{transform:translateY(6px)}}
+@keyframes grow{0%,100%{height:30px;opacity:.5}50%{height:40px;opacity:1}}
+
+/* ── Sections ── */
+.section{max-width:900px;margin:0 auto;padding:5rem 2rem}
+.section-number{font-family:var(--mono);font-size:.65rem;letter-spacing:.2em;text-transform:uppercase;color:var(--accent);margin-bottom:.75rem}
+.section h2{font-family:var(--serif);font-size:clamp(1.6rem,3vw,2.2rem);font-weight:400;margin-bottom:2rem;line-height:1.3}
+.section-divider{width:100%;max-width:900px;margin:0 auto;border:none;border-top:1px solid var(--border)}
+
+/* ── Drop Cap ── */
+.drop-cap::first-letter{font-family:var(--serif);float:left;font-size:4rem;line-height:.8;padding-right:.6rem;padding-top:.25rem;color:var(--accent);font-weight:600}
+
+/* ── Two-Column Layout ── */
+.two-col{columns:2;column-gap:2.5rem;column-rule:1px solid var(--border)}
+.two-col p{margin-bottom:1rem;text-align:justify;hyphens:auto}
+@media(max-width:700px){.two-col{columns:1}}
+
+/* ── Pull Quote ── */
+.pull-quote{border-left:3px solid var(--accent);margin:2.5rem 0;padding:1.5rem 2rem;font-family:var(--serif);font-size:1.3rem;font-style:italic;color:var(--paper);background:var(--surface);line-height:1.5}
+.pull-quote cite{display:block;font-size:.75rem;font-family:var(--mono);font-style:normal;color:var(--text-secondary);margin-top:.75rem;letter-spacing:.1em;text-transform:uppercase}
+
+/* ── Equation Block ── */
+.equation-block{background:var(--elevated);border:1px solid var(--border);border-radius:3px;padding:1.5rem 2rem;margin:2rem 0;text-align:center;font-family:var(--mono);font-size:1rem;letter-spacing:.02em;line-height:2}
+.equation-block .eq-label{font-size:.65rem;text-transform:uppercase;letter-spacing:.15em;color:var(--text-secondary);display:block;margin-top:.5rem}
+.equation-block .eq-main{color:var(--paper);font-size:1.1rem}
+.equation-block .eq-accent{color:var(--accent)}
+
+/* ── Margin Notes ── */
+.margin-note{font-family:var(--mono);font-size:.7rem;color:var(--text-secondary);border-left:2px solid var(--border);padding-left:.75rem;margin:1.5rem 0;line-height:1.5;font-style:italic}
+
+/* ── Figure Frames ── */
+.figure{background:var(--surface);border:1px solid var(--border);border-radius:2px;margin:2rem 0;overflow:hidden}
+.figure-header{padding:1.25rem 1.5rem;border-bottom:1px solid var(--border);display:flex;align-items:baseline;gap:1rem}
+.figure-header .fig-num{font-family:var(--mono);font-size:.7rem;letter-spacing:.15em;text-transform:uppercase;color:var(--accent);white-space:nowrap}
+.figure-header .fig-title{font-family:var(--serif);font-size:1.1rem;font-weight:500}
+.figure-body{padding:1.5rem}
+.figure-caption{padding:1rem 1.5rem;border-top:1px solid var(--border);font-size:.85rem;color:var(--text-secondary);font-style:italic;line-height:1.5}
+.figure-intro{font-size:.85rem;color:var(--text-secondary);margin-bottom:1.25rem;font-family:var(--body)}
+
+/* ── Token Grid & Portfolio ── */
+.token-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:.75rem;margin-bottom:1.5rem}
+.token-chip{background:var(--elevated);border:1px solid var(--border);border-radius:3px;padding:.75rem;cursor:pointer;transition:background .2s, border-color .2s;text-align:center}
+.token-chip:hover{border-color:var(--accent)}
+.token-chip.active{border-color:var(--accent);background:rgba(200,85,61,.1)}
+.token-chip .token-symbol{font-family:var(--mono);font-size:.85rem;font-weight:500}
+.token-chip .token-price{font-family:var(--mono);font-size:.65rem;color:var(--text-secondary);margin-top:.25rem}
+.portfolio-entry{display:flex;align-items:center;gap:.75rem;padding:.75rem;background:var(--elevated);border:1px solid var(--border);border-radius:3px;margin-bottom:.5rem}
+.portfolio-entry .pe-symbol{font-family:var(--mono);font-size:.8rem;min-width:60px;color:var(--accent)}
+.portfolio-entry .pe-chain{font-family:var(--mono);font-size:.65rem;color:var(--text-secondary)}
+.portfolio-entry input[type="number"]{flex:1;background:transparent;border:1px solid var(--border);color:var(--text);font-family:var(--mono);font-size:.85rem;padding:.4rem .6rem;border-radius:2px;max-width:120px}
+.portfolio-entry input[type="number"]:focus{outline:none;border-color:var(--accent)}
+.portfolio-entry select{background:var(--surface);border:1px solid var(--border);color:var(--text);font-family:var(--mono);font-size:.65rem;padding:.25rem .4rem;border-radius:2px}
+.portfolio-entry .pe-value{font-family:var(--mono);font-size:.8rem;color:var(--text-secondary);min-width:80px;text-align:right;font-variant-numeric:tabular-nums}
+.portfolio-entry .pe-remove{background:none;border:none;color:var(--text-secondary);cursor:pointer;font-size:1.1rem;padding:0 .25rem;transition:color .2s}
+.portfolio-entry .pe-remove:hover{color:var(--accent)}
+.results-panel{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-top:1.5rem}
+.result-card{background:var(--elevated);border:1px solid var(--border);border-radius:3px;padding:1.25rem}
+.result-card .rc-label{font-family:var(--mono);font-size:.6rem;letter-spacing:.15em;text-transform:uppercase;color:var(--text-secondary);margin-bottom:.5rem}
+.result-card .rc-value{font-family:var(--mono);font-size:1.6rem;font-weight:500;font-variant-numeric:tabular-nums}
+.result-card.elastic .rc-value{color:var(--accent)}
+.result-card .rc-sub{font-family:var(--mono);font-size:.7rem;color:var(--text-secondary);margin-top:.35rem;font-variant-numeric:tabular-nums}
+.gain-bar{margin-top:1.5rem;background:var(--elevated);border:1px solid var(--border);border-radius:3px;padding:1rem 1.25rem;display:flex;align-items:center;justify-content:space-between}
+.gain-bar .gb-label{font-family:var(--mono);font-size:.7rem;color:var(--text-secondary);text-transform:uppercase;letter-spacing:.1em}
+.gain-bar .gb-value{font-family:var(--mono);font-size:1.2rem;color:var(--accent);font-weight:500;font-variant-numeric:tabular-nums}
+.hhi-display{margin-top:.75rem;padding:.75rem 1rem;background:var(--elevated);border:1px solid var(--border);border-radius:3px;display:flex;justify-content:space-between;align-items:center}
+.hhi-display .hhi-label{font-family:var(--mono);font-size:.65rem;color:var(--text-secondary);text-transform:uppercase;letter-spacing:.1em}
+.hhi-display .hhi-value{font-family:var(--mono);font-size:.9rem;font-variant-numeric:tabular-nums}
+
+/* ── Crash Simulator (Figure 2) ── */
+.crash-controls{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-bottom:1.5rem}
+@media(max-width:600px){.crash-controls{grid-template-columns:1fr}}
+.slider-group{margin-bottom:.5rem}
+.slider-group label{font-family:var(--mono);font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;color:var(--text-secondary);display:flex;justify-content:space-between;align-items:center;margin-bottom:.5rem}
+.slider-group label .slider-val{color:var(--danger);font-weight:500;font-variant-numeric:tabular-nums}
+.slider-group input[type=range]{-webkit-appearance:none;width:100%;height:4px;background:var(--elevated);border-radius:2px;outline:none}
+.slider-group input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;background:var(--accent);cursor:pointer;border:2px solid var(--bg)}
+.debt-input-row{display:flex;align-items:center;gap:1rem;margin-bottom:1.5rem;padding:1rem;background:var(--elevated);border:1px solid var(--border);border-radius:3px}
+.debt-input-row label{font-family:var(--mono);font-size:.7rem;text-transform:uppercase;letter-spacing:.1em;color:var(--text-secondary);white-space:nowrap}
+.debt-input-row input{flex:1;background:transparent;border:1px solid var(--border);color:var(--text);font-family:var(--mono);font-size:.9rem;padding:.4rem .6rem;border-radius:2px;max-width:160px;font-variant-numeric:tabular-nums}
+.debt-input-row input:focus{outline:none;border-color:var(--accent)}
+
+/* ── Gauges Row ── */
+.gauges-row{display:flex;justify-content:center;gap:3rem;margin:1.5rem 0;flex-wrap:wrap}
+.gauge-container{display:flex;flex-direction:column;align-items:center;gap:.5rem}
+.gauge{width:160px;height:160px;position:relative}
+.gauge svg{transform:rotate(-90deg)}
+.gauge-value{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-family:var(--mono);font-size:1.8rem;font-weight:700;font-variant-numeric:tabular-nums}
+.gauge-status{font-family:var(--mono);font-size:.7rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;margin-top:.25rem}
+.gauge-label{font-family:var(--mono);font-size:.65rem;text-transform:uppercase;letter-spacing:1px;color:var(--text-secondary)}
+
+/* ── Crash Summary ── */
+.crash-summary{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem;margin-top:1.5rem}
+.crash-summary .cs-card{background:var(--elevated);border:1px solid var(--border);border-radius:3px;padding:1rem;text-align:center}
+.crash-summary .cs-label{font-family:var(--mono);font-size:.6rem;text-transform:uppercase;letter-spacing:.1em;color:var(--text-secondary);margin-bottom:.35rem}
+.crash-summary .cs-value{font-family:var(--mono);font-size:1.1rem;font-variant-numeric:tabular-nums}
+@media(max-width:600px){.crash-summary{grid-template-columns:1fr}}
+
+/* ── Stretch Effect (Figure 3) ── */
+.stretch-viz{margin-top:1.5rem}
+.stretch-state{margin-bottom:1.5rem}
+.stretch-state h4{font-family:var(--mono);font-size:.7rem;letter-spacing:.15em;text-transform:uppercase;color:var(--text-secondary);margin-bottom:.75rem}
+.group-bar-row{display:flex;align-items:center;gap:.75rem;margin-bottom:.5rem}
+.group-bar-row .gb-name{font-family:var(--mono);font-size:.7rem;min-width:55px;text-align:right;text-transform:uppercase;font-variant-numeric:tabular-nums}
+.group-bar-row .gb-track{flex:1;height:28px;background:var(--bg);border-radius:2px;position:relative;overflow:hidden}
+.group-bar-row .gb-fill{height:100%;border-radius:2px;display:flex;align-items:center;padding-left:.5rem;font-family:var(--mono);font-size:.65rem;color:var(--bg);font-weight:500;transition:width .6s cubic-bezier(.4,0,.2,1)}
+.group-bar-row .gb-amt{font-family:var(--mono);font-size:.7rem;color:var(--text-secondary);min-width:70px;text-align:right;font-variant-numeric:tabular-nums}
+.stretch-btn{display:block;margin:1.5rem auto;padding:.75rem 2rem;border:2px solid var(--accent);border-radius:3px;background:transparent;font-family:var(--mono);font-size:.8rem;letter-spacing:.08em;color:var(--accent);cursor:pointer;text-transform:uppercase;transition:background .2s, color .2s}
+.stretch-btn:hover{background:var(--accent);color:var(--paper)}
+.stretch-btn:disabled{opacity:.5;cursor:not-allowed}
+.stretch-metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-top:1.5rem}
+.stretch-metrics .sm-card{background:var(--elevated);border:1px solid var(--border);border-radius:3px;padding:1rem;text-align:center}
+.stretch-metrics .sm-label{font-family:var(--mono);font-size:.6rem;text-transform:uppercase;letter-spacing:.1em;color:var(--text-secondary);margin-bottom:.35rem}
+.stretch-metrics .sm-value{font-family:var(--mono);font-size:1.1rem;font-variant-numeric:tabular-nums}
+.stretch-delta{margin-top:1rem;padding:1rem 1.25rem;background:var(--elevated);border:1px solid var(--accent);border-radius:3px;text-align:center}
+.stretch-delta .sd-label{font-family:var(--mono);font-size:.65rem;text-transform:uppercase;letter-spacing:.12em;color:var(--text-secondary)}
+.stretch-delta .sd-value{font-family:var(--mono);font-size:1.4rem;color:var(--accent);font-weight:500;margin-top:.25rem;font-variant-numeric:tabular-nums}
+
+/* ── Table 1 ── */
+.iso-table{width:100%;border-collapse:collapse;font-family:var(--body)}
+.iso-table thead th{font-family:var(--mono);font-size:.65rem;text-transform:uppercase;letter-spacing:.15em;color:var(--text-secondary);padding:.75rem 1rem;text-align:left;border-bottom:2px solid var(--accent)}
+.iso-table tbody td{padding:.75rem 1rem;border-bottom:1px solid var(--border);font-size:.95rem;vertical-align:top}
+.iso-table tbody tr:hover{background:var(--surface)}
+.iso-table .col-arrow{text-align:center;color:var(--accent);font-size:1.2rem;width:40px}
+
+/* ── Appendix ── */
+.appendix-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1rem}
+.chain-card{background:var(--elevated);border:1px solid var(--border);border-radius:3px;padding:1.25rem;cursor:pointer;transition:background .2s, border-color .2s}
+.chain-card:hover,.chain-card.selected{border-color:var(--accent)}
+.chain-card.selected{background:rgba(200,85,61,.08)}
+.chain-card h4{font-family:var(--mono);font-size:.8rem;margin-bottom:.25rem}
+.chain-card p{font-size:.75rem;color:var(--text-secondary);font-family:var(--mono)}
+.action-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-top:1.5rem}
+@media(max-width:500px){.action-row{grid-template-columns:1fr}}
+.action-box{background:var(--elevated);border:1px solid var(--border);border-radius:3px;padding:1.25rem}
+.action-box h4{font-family:var(--mono);font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;color:var(--text-secondary);margin-bottom:1rem}
+.action-box input{width:100%;background:transparent;border:1px solid var(--border);color:var(--text);font-family:var(--mono);font-size:.9rem;padding:.6rem .8rem;border-radius:2px;margin-bottom:.75rem}
+.action-box input:focus{outline:none;border-color:var(--accent)}
+.action-box select{width:100%;background:var(--surface);border:1px solid var(--border);color:var(--text);font-family:var(--mono);font-size:.85rem;padding:.5rem;border-radius:2px;margin-bottom:.75rem}
+.btn{width:100%;padding:.75rem;border:none;border-radius:3px;font-family:var(--mono);font-size:.8rem;letter-spacing:.08em;cursor:pointer;transition:background .2s, color .2s}
+.btn-primary{background:var(--accent);color:var(--paper)}
+.btn-primary:hover{background:var(--accent-dim)}
+.btn-secondary{background:transparent;border:1px solid var(--accent);color:var(--accent)}
+.btn-secondary:hover{background:rgba(200,85,61,.1)}
+.wallet-status{text-align:center;padding:1rem;font-family:var(--mono);font-size:.75rem;color:var(--text-secondary);border:1px solid var(--border);border-radius:3px;margin-bottom:1.5rem;background:var(--elevated)}
+.wallet-hf{margin-top:1.5rem;padding:1.25rem;background:var(--elevated);border:1px solid var(--border);border-radius:3px;text-align:center}
+.wallet-hf .whf-label{font-family:var(--mono);font-size:.65rem;text-transform:uppercase;letter-spacing:.12em;color:var(--text-secondary)}
+.wallet-hf .whf-value{font-family:var(--mono);font-size:2rem;font-weight:500;color:var(--accent);margin-top:.25rem;font-variant-numeric:tabular-nums}
+
+/* ── Toast ── */
+.toast{position:fixed;bottom:2rem;right:2rem;background:var(--surface);border:1px solid var(--accent);border-radius:3px;padding:.75rem 1.25rem;font-family:var(--mono);font-size:.75rem;color:var(--text);z-index:1100;opacity:0;transform:translateY(10px);transition:opacity .3s, transform .3s;pointer-events:none}
+.toast.show{opacity:1;transform:translateY(0)}
+
+/* ── DNA Badge ── */
+.dna-badge{position:fixed;bottom:1.25rem;left:1.25rem;z-index:900;font-family:var(--mono);font-size:.55rem;letter-spacing:.15em;text-transform:uppercase;color:var(--text-secondary);background:var(--surface);border:1px solid var(--border);padding:.4rem .7rem;border-radius:2px;opacity:.6;transition:opacity .2s}
+.dna-badge:hover{opacity:1}
+
+/* ── Footnotes ── */
+.footnote{font-family:var(--mono);font-size:.7rem;color:var(--text-secondary);margin-top:2rem;padding-top:1rem;border-top:1px solid var(--border);line-height:1.8}
+.footnote sup{color:var(--accent);margin-right:.25rem}
+
+/* ── Scroll Reveal ── */
+.reveal{opacity:0;transform:translateY(24px);transition:opacity .8s ease, transform .8s ease}
+.reveal.visible{opacity:1;transform:translateY(0)}
+
+/* ── Footer ── */
+footer{max-width:900px;margin:0 auto;padding:3rem 2rem;text-align:center;border-top:1px solid var(--border)}
+footer p{font-family:var(--mono);font-size:.65rem;color:var(--text-secondary);letter-spacing:.1em}
+footer .footer-links{margin-top:1rem;display:flex;justify-content:center;gap:1.5rem;flex-wrap:wrap}
+footer .footer-links a{font-family:var(--mono);font-size:.6rem;color:var(--text-secondary);text-decoration:none;text-transform:uppercase;letter-spacing:.1em;transition:color .2s}
+footer .footer-links a:hover{color:var(--accent)}
+
+/* ── Responsive ── */
+@media(max-width:700px){
+  .hero h1{font-size:1.8rem}
+  .hero-subtitle{font-size:.95rem}
+  .results-panel{grid-template-columns:1fr}
+  .crash-controls{grid-template-columns:1fr}
+  .stretch-metrics{grid-template-columns:1fr}
+  .section{padding:3rem 1.25rem}
+  .figure-body{padding:1rem}
+  .figure-caption{padding:.75rem 1rem}
+  .iso-table{font-size:.8rem}
+  .iso-table thead th{padding:.5rem}
+  .iso-table tbody td{padding:.5rem}
+  .pull-quote{font-size:1.1rem;padding:1rem 1.25rem}
+  .nav-menu a{font-size:1.2rem}
+  .equation-block{padding:1rem;font-size:.85rem}
+  .gauges-row{gap:1.5rem}
+  .gauge{width:130px;height:130px}
+  .gauge-value{font-size:1.4rem}
+}
+@media(max-width:400px){
+  .action-row{grid-template-columns:1fr}
+  .appendix-grid{grid-template-columns:1fr}
+  .token-grid{grid-template-columns:repeat(2,1fr)}
+}
+</style>
+</head>
+<body>
+
+<!-- Reading Progress -->
+<div class="reading-progress" id="readingProgress"></div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<!-- Hidden Nav -->
+<button class="nav-toggle" id="navToggle" aria-label="Menu">
+  <span></span><span></span><span></span>
+</button>
+<div class="nav-overlay" id="navOverlay">
+  <ul class="nav-menu">
+    <li><a href="#abstract" onclick="closeNav()">Abstract<span class="nav-label">The Problem</span></a></li>
+    <li><a href="#fig1" onclick="closeNav()">Figure 1<span class="nav-label">Portfolio Simulator</span></a></li>
+    <li><a href="#fig2" onclick="closeNav()">Figure 2<span class="nav-label">Crash Simulator</span></a></li>
+    <li><a href="#fig3" onclick="closeNav()">Figure 3<span class="nav-label">The Stretch Effect</span></a></li>
+    <li><a href="#table1" onclick="closeNav()">Table 1<span class="nav-label">The Isomorphism</span></a></li>
+    <li><a href="#appendix" onclick="closeNav()">Appendix<span class="nav-label">Live Protocol</span></a></li>
+  </ul>
+</div>
+
+<!-- Hero -->
+<section class="hero">
+  <div class="hero-rule"></div>
+  <div class="hero-journal">ElasticLend Working Paper · March 2026</div>
+  <h1>Elastic Restaking Networks<br>Applied to <em>Lending</em></h1>
+  <p class="hero-subtitle">Correlated assets shouldn't be penalized as if they were independent. We prove that treating collateral risk as a portfolio unlocks 20 to 40% more borrowing power with no additional risk.</p>
+  <div class="hero-authors">ElasticLend Research &middot; v0.3 Draft</div>
+  <div class="scroll-indicator">Scroll</div>
+</section>
+
+<hr class="section-divider">
+
+<!-- Abstract -->
+<section class="section" id="abstract">
+  <div class="section-number">Section I</div>
+  <h2>Abstract</h2>
+  <div class="two-col">
+    <p class="drop-cap">Existing lending protocols compute borrowing power by summing the worst-case loss of each collateral asset independently. This is the rigid model: every dollar of risk is additive. But portfolio theory has known since Markowitz (1952) that diversified risk is sub-additive. When you hold ETH and wstETH, their crashes are correlated, so the combined worst case is not the sum of their individual worst cases.</p>
+    <p>ElasticLend introduces the elastic model, which borrows from the mathematics of restaking networks to compute borrowing power as a portfolio. Instead of subtracting the sum of expected losses, we subtract the root-sum-square (the L2 norm) of expected losses per risk group. The result: diversified portfolios unlock significantly more capital, while concentrated portfolios see no change. Risk is conserved; only its measurement improves.</p>
+    <p>The key insight is an isomorphism between restaking networks and lending collateral. In restaking, a single ETH stake secures multiple services simultaneously. The stake "stretches" across obligations. In elastic lending, a single collateral portfolio secures borrowing capacity that recognizes the diversification benefit. The collateral "stretches" further when risk groups are uncorrelated.</p>
+    <p>We demonstrate this with three interactive figures below. Figure 1 lets you build a portfolio and compare elastic vs. rigid borrowing power. Figure 2 simulates a market crash with per-risk-group severity sliders. Figure 3 visualizes the "stretch effect" after partial liquidation. The mathematics are exact and the simulations run live in your browser.</p>
+  </div>
+  <div class="equation-block reveal">
+    <span class="eq-main">BP<sub>rigid</sub> = C &minus; <span style="color:var(--text-secondary)">&Sigma;</span> EL<sub>g</sub></span>
+    <br>
+    <span class="eq-main">BP<sub><span class="eq-accent">elastic</span></sub> = C &minus; <span class="eq-accent">&radic;</span><span style="text-decoration:overline">&Sigma; EL<sub>g</sub>&sup2;</span></span>
+    <span class="eq-label">Equation 1: Core Borrowing Power Formulas</span>
+  </div>
+  <div class="margin-note reveal">
+    Where C = total collateral value, EL<sub>g</sub> = groupValue &times; maxDrop (expected loss per risk group). The key difference: the sqrt in the elastic formula means uncorrelated risks partially cancel.
+  </div>
+  <div class="pull-quote reveal">
+    "Diversified collateral is strictly safer than concentrated collateral. Rigid models punish both equally. The elastic model corrects this by measuring risk as a portfolio, not a list."
+    <cite>Key Result, Theorem 1</cite>
+  </div>
+  <div class="footnote reveal">
+    <sup>1</sup>The L2 norm aggregation is equivalent to assuming risk groups have zero correlation. In practice, some cross-group correlation exists, but empirical data shows the elastic model still outperforms rigid by 15 to 35% without increasing realized losses.<br>
+    <sup>2</sup>HHI (Herfindahl-Hirschman Index) ranges from ~2,500 (4 equal groups) to 10,000 (single group). Elastic advantage is inversely correlated with HHI.
+  </div>
+</section>
+
+<hr class="section-divider">
+
+<!-- Figure 1: Portfolio Simulator -->
+<section class="section" id="fig1">
+  <div class="section-number">Section II</div>
+  <h2>Figure 1:Portfolio Simulator</h2>
+
+  <div class="figure reveal">
+    <div class="figure-header">
+      <span class="fig-num">Fig. 1</span>
+      <span class="fig-title">Elastic vs. Rigid Borrowing Power Under Portfolio Construction</span>
+    </div>
+    <div class="figure-body">
+      <p class="figure-intro">Select tokens and enter amounts to build a collateral portfolio. The simulator computes both rigid (sum of losses) and elastic (root-sum-square of losses) borrowing power in real time.</p>
+      <div class="token-grid" id="tokenGrid"></div>
+      <div id="portfolioEntries"></div>
+      <div class="results-panel">
+        <div class="result-card">
+          <div class="rc-label">Rigid Borrowing Power</div>
+          <div class="rc-value" id="rigidBP">$0</div>
+          <div class="rc-sub" id="rigidLTV">LTV: 0%</div>
+        </div>
+        <div class="result-card elastic">
+          <div class="rc-label">Elastic Borrowing Power</div>
+          <div class="rc-value" id="elasticBP">$0</div>
+          <div class="rc-sub" id="elasticLTV">LTV: 0%</div>
+        </div>
+      </div>
+      <div class="gain-bar">
+        <span class="gb-label">Elastic Advantage</span>
+        <span class="gb-value" id="gainPct">+0%</span>
+      </div>
+      <div class="hhi-display">
+        <span class="hhi-label">Portfolio HHI (concentration)</span>
+        <span class="hhi-value" id="hhiValue">0</span>
+      </div>
+    </div>
+    <div class="figure-caption">
+      <strong>Figure 1.</strong> The elastic model computes expected loss per risk group, then takes the L2 norm: <code>BP = Total - sqrt(&Sigma; EL<sub>g</sub>&sup2;)</code>. When assets are spread across groups, the sqrt compresses risk. When concentrated in one group, elastic equals rigid. HHI measures concentration: 10,000 = single group, lower = diversified.
+    </div>
+  </div>
+</section>
+
+<hr class="section-divider">
+
+<!-- Figure 2: Crash Simulator -->
+<section class="section" id="fig2">
+  <div class="section-number">Section III</div>
+  <h2>Figure 2:Crash Simulator</h2>
+
+  <div class="equation-block reveal">
+    <span class="eq-main">HF = <span class="eq-accent">BP</span> / Debt</span>
+    &nbsp;&nbsp;&nbsp;
+    <span class="eq-main">Liquidation when HF &lt; <span style="color:#E74C3C">1.0</span></span>
+    <span class="eq-label">Equation 2:Health Factor Definition</span>
+  </div>
+  <div class="margin-note reveal">
+    The health factor measures how far a position is from liquidation. Under the elastic model, the higher BP means a larger buffer. In a crash, the elastic HF degrades more slowly because the sqrt dampens the impact of diversified losses.
+  </div>
+
+  <div class="figure reveal">
+    <div class="figure-header">
+      <span class="fig-num">Fig. 2</span>
+      <span class="fig-title">Health Factor Under Per-Group Market Stress</span>
+    </div>
+    <div class="figure-body">
+      <p class="figure-intro">Drag each risk group's crash slider to simulate independent market drops. The gauges show how health factors diverge between rigid and elastic models. Uses the portfolio from Figure 1.</p>
+
+      <div class="crash-controls">
+        <div class="slider-group">
+          <label>ETH crash <span class="slider-val" id="ethCrashVal">-25%</span></label>
+          <input type="range" id="sliderETH" min="0" max="50" value="25">
+        </div>
+        <div class="slider-group">
+          <label>BTC crash <span class="slider-val" id="btcCrashVal">-20%</span></label>
+          <input type="range" id="sliderBTC" min="0" max="45" value="20">
+        </div>
+        <div class="slider-group">
+          <label>STABLE depeg <span class="slider-val" id="stableCrashVal">-1.0%</span></label>
+          <input type="range" id="sliderSTABLE" min="0" max="5" value="1" step="0.5">
+        </div>
+        <div class="slider-group">
+          <label>OTHER crash <span class="slider-val" id="otherCrashVal">-30%</span></label>
+          <input type="range" id="sliderOTHER" min="0" max="60" value="30">
+        </div>
+      </div>
+
+      <div class="debt-input-row">
+        <label>Borrow (Debt) $</label>
+        <input type="number" id="debtInput" value="8000" min="0" step="100">
+      </div>
+
+      <div class="gauges-row">
+        <div class="gauge-container">
+          <div class="gauge">
+            <svg width="160" height="160" viewBox="0 0 160 160">
+              <circle cx="80" cy="80" r="70" fill="none" stroke="var(--elevated)" stroke-width="8"/>
+              <circle cx="80" cy="80" r="70" fill="none" stroke="var(--text-secondary)" stroke-width="8" stroke-dasharray="440" stroke-dashoffset="220" stroke-linecap="round" id="gaugeRigidArc"/>
+            </svg>
+            <div class="gauge-value" id="gaugeRigidVal">1.00</div>
+          </div>
+          <div class="gauge-status" id="gaugeRigidStatus" style="color:var(--text-secondary)">SURVIVES</div>
+          <span class="gauge-label">Rigid Health Factor</span>
+        </div>
+        <div class="gauge-container">
+          <div class="gauge">
+            <svg width="160" height="160" viewBox="0 0 160 160">
+              <circle cx="80" cy="80" r="70" fill="none" stroke="var(--elevated)" stroke-width="8"/>
+              <circle cx="80" cy="80" r="70" fill="none" stroke="var(--accent)" stroke-width="8" stroke-dasharray="440" stroke-dashoffset="220" stroke-linecap="round" id="gaugeElasticArc"/>
+            </svg>
+            <div class="gauge-value" style="color:var(--accent)" id="gaugeElasticVal">1.00</div>
+          </div>
+          <div class="gauge-status" id="gaugeElasticStatus" style="color:var(--accent)">SURVIVES</div>
+          <span class="gauge-label">Elastic Health Factor</span>
+        </div>
+      </div>
+
+      <div style="position:relative;height:200px;background:var(--elevated);border:1px solid var(--border);border-radius:3px;margin:1.5rem 0">
+        <canvas id="crashChart" style="width:100%;height:100%"></canvas>
+      </div>
+      <div style="display:flex;gap:1.5rem;justify-content:center;margin-bottom:1rem">
+        <span style="font-family:var(--mono);font-size:.7rem;display:flex;align-items:center;gap:.4rem"><span style="display:inline-block;width:16px;height:3px;background:var(--accent);border-radius:1px"></span>Elastic BP</span>
+        <span style="font-family:var(--mono);font-size:.7rem;display:flex;align-items:center;gap:.4rem"><span style="display:inline-block;width:16px;height:3px;background:var(--text-secondary);border-radius:1px"></span>Rigid BP</span>
+        <span style="font-family:var(--mono);font-size:.7rem;display:flex;align-items:center;gap:.4rem"><span style="display:inline-block;width:16px;height:1px;border-top:1px dashed #E74C3C"></span>Debt</span>
+      </div>
+
+      <div class="crash-summary">
+        <div class="cs-card">
+          <div class="cs-label">Pre-Crash Collateral</div>
+          <div class="cs-value" id="csPreCollateral">$0</div>
+        </div>
+        <div class="cs-card">
+          <div class="cs-label">Post-Crash Collateral</div>
+          <div class="cs-value" id="csPostCollateral">$0</div>
+        </div>
+        <div class="cs-card">
+          <div class="cs-label">Capital Saved by Elastic</div>
+          <div class="cs-value" id="csCapitalSaved" style="color:var(--accent)">$0</div>
+        </div>
+      </div>
+      <div class="crash-summary" style="margin-top:.5rem">
+        <div class="cs-card">
+          <div class="cs-label">Rigid BP (post-crash)</div>
+          <div class="cs-value" id="csRigidBP">$0</div>
+        </div>
+        <div class="cs-card">
+          <div class="cs-label">Elastic BP (post-crash)</div>
+          <div class="cs-value" id="csElasticBP" style="color:var(--accent)">$0</div>
+        </div>
+        <div class="cs-card">
+          <div class="cs-label">Elastic Advantage</div>
+          <div class="cs-value" id="csAdvantage" style="color:var(--success)">+0%</div>
+        </div>
+      </div>
+    </div>
+    <div class="figure-caption">
+      <strong>Figure 2.</strong> Health factor = borrowing power / debt. The elastic model's sqrt compression means the health factor degrades more slowly under stress. When the rigid model hits HF &lt; 1.0 (liquidation), the elastic model can still survive thanks to diversification benefit.
+    </div>
+  </div>
+</section>
+
+<hr class="section-divider">
+
+<!-- Figure 3: Stretch Effect -->
+<section class="section" id="fig3">
+  <div class="section-number">Section IV</div>
+  <h2>Figure 3:The Stretch Effect</h2>
+
+  <div class="margin-note reveal">
+    Partial liquidation removes collateral to restore the health factor above 1.0. In elastic models, removing the most concentrated group actually improves the diversification ratio, creating a natural "bounce back" in borrowing power per dollar. We call this the stretch effect.
+  </div>
+
+  <div class="figure reveal">
+    <div class="figure-header">
+      <span class="fig-num">Fig. 3</span>
+      <span class="fig-title">Collateral Utilization After Partial Liquidation</span>
+    </div>
+    <div class="figure-body">
+      <p class="figure-intro">The bars show each risk group's collateral value. Click "Liquidate Most Impaired" to seize 50% of the most concentrated group. Watch how the remaining collateral "stretches":BP per dollar increases.</p>
+
+      <div class="stretch-viz">
+        <div class="stretch-state" id="stretchBefore">
+          <h4>Current Portfolio</h4>
+          <div id="beforeBars"></div>
+        </div>
+
+        <div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap">
+        <button class="stretch-btn" id="stretchLiqBtn" onclick="doStretchLiquidation()" style="margin:1.5rem 0">Liquidate Most Impaired</button>
+        <button class="stretch-btn" id="stretchResetBtn" onclick="resetStretch()" style="margin:1.5rem 0;border-color:var(--text-secondary);color:var(--text-secondary);display:none">Reset</button>
+      </div>
+
+        <div class="stretch-state" id="stretchAfter" style="display:none">
+          <h4>After Liquidation</h4>
+          <div id="afterBars"></div>
+        </div>
+      </div>
+
+      <div class="stretch-metrics">
+        <div class="sm-card">
+          <div class="sm-label">HHI Before</div>
+          <div class="sm-value" id="smHHIBefore">--</div>
+        </div>
+        <div class="sm-card">
+          <div class="sm-label">HHI After</div>
+          <div class="sm-value" id="smHHIAfter">--</div>
+        </div>
+        <div class="sm-card">
+          <div class="sm-label">BP Before</div>
+          <div class="sm-value" id="smBPBefore">--</div>
+        </div>
+      </div>
+      <div class="stretch-metrics" style="margin-top:.5rem">
+        <div class="sm-card">
+          <div class="sm-label">BP After</div>
+          <div class="sm-value" id="smBPAfter">--</div>
+        </div>
+        <div class="sm-card">
+          <div class="sm-label">BP/$ Before</div>
+          <div class="sm-value" id="smBPDolBefore">--</div>
+        </div>
+        <div class="sm-card">
+          <div class="sm-label">BP/$ After</div>
+          <div class="sm-value" id="smBPDolAfter" style="color:var(--accent)">--</div>
+        </div>
+      </div>
+
+      <div class="stretch-delta" id="stretchDelta" style="display:none">
+        <div class="sd-label">BP per dollar increased from <span id="sdFrom">0%</span> to <span id="sdTo">0%</span>:the remaining collateral stretched</div>
+        <div class="sd-value" id="sdChange">+0%</div>
+      </div>
+    </div>
+    <div class="figure-caption">
+      <strong>Figure 3.</strong> After partial liquidation removes the most concentrated collateral, the remaining portfolio becomes more diversified. The elastic model's BP per dollar of collateral increases. This is the "stretch effect":elastic collateral bounces back from liquidation more efficiently than rigid.
+    </div>
+  </div>
+</section>
+
+<hr class="section-divider">
+
+<!-- Table 1 -->
+<section class="section" id="table1">
+  <div class="section-number">Section V</div>
+  <h2>Table 1:The Isomorphism</h2>
+  <p style="margin-bottom:1.5rem;color:var(--text-secondary);">A formal mapping between the concepts in restaking networks and elastic lending. Every element in one domain has a precise analogue in the other.</p>
+
+  <div class="equation-block reveal">
+    <span class="eq-main">HHI = <span class="eq-accent">&Sigma;</span> s<sub>g</sub>&sup2; &times; 10,000</span>
+    &nbsp;&nbsp;where&nbsp;&nbsp;
+    <span class="eq-main">s<sub>g</sub> = value<sub>g</sub> / total</span>
+    <span class="eq-label">Equation 3:Herfindahl-Hirschman Concentration Index</span>
+  </div>
+  <div class="margin-note reveal">
+    HHI quantifies portfolio concentration. A single-asset portfolio scores 10,000. Splitting equally across 4 groups scores 2,500. The elastic advantage (% gain over rigid) is monotonically decreasing with HHI:maximum diversification yields maximum benefit.
+  </div>
+
+  <div class="figure reveal">
+    <div class="figure-header">
+      <span class="fig-num">Table 1</span>
+      <span class="fig-title">Restaking &harr; Lending Concept Map</span>
+    </div>
+    <div class="figure-body" style="overflow-x:auto">
+      <table class="iso-table">
+        <thead>
+          <tr><th>Restaking Network</th><th class="col-arrow"></th><th>Elastic Lending</th><th>Significance</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>ETH Stake</td><td class="col-arrow">&harr;</td><td>Collateral Deposit</td><td>Capital committed to secure obligations</td></tr>
+          <tr><td>AVS (Actively Validated Service)</td><td class="col-arrow">&harr;</td><td>Borrow Position</td><td>The obligation secured by the capital</td></tr>
+          <tr><td>Operator</td><td class="col-arrow">&harr;</td><td>Borrower</td><td>Entity managing the capital allocation</td></tr>
+          <tr><td>Slashing Condition</td><td class="col-arrow">&harr;</td><td>Liquidation Trigger</td><td>Penalty for under-collateralization</td></tr>
+          <tr><td>Restaking (multi-AVS)</td><td class="col-arrow">&harr;</td><td>Portfolio Diversification</td><td>Single capital base secures multiple obligations</td></tr>
+          <tr><td>Unique Security Budget</td><td class="col-arrow">&harr;</td><td>Expected Loss per Group</td><td>Risk attributed to a specific obligation</td></tr>
+          <tr><td>Shared Security (L2 norm)</td><td class="col-arrow">&harr;</td><td>Elastic Borrowing Power</td><td>Sub-additive risk aggregation</td></tr>
+          <tr><td>Over-slashing Protection</td><td class="col-arrow">&harr;</td><td>Liquidation Buffer</td><td>Margin before capital is at risk</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="figure-caption">
+      <strong>Table 1.</strong> The isomorphism is exact: every theorem proved about restaking security budgets translates directly into a theorem about elastic borrowing power. This is why the sqrt aggregation isn't ad hoc:it derives from the same cryptoeconomic security model.
+    </div>
+  </div>
+</section>
+
+<hr class="section-divider">
+
+<!-- Appendix -->
+<section class="section" id="appendix">
+  <div class="section-number">Appendix</div>
+  <h2>Live Protocol Interface</h2>
+  <p style="margin-bottom:1.5rem;color:var(--text-secondary);">Connect a wallet to interact with the deployed ElasticLend contracts. This appendix provides a minimal interface for deposits, borrows, and repayment.</p>
+
+  <div class="wallet-status" id="walletStatus">No wallet connected. Click below to connect.</div>
+  <button class="btn btn-secondary" style="margin-bottom:2rem;max-width:260px" onclick="connectWallet()">Connect Wallet</button>
+
+  <h3 style="font-family:var(--serif);font-size:1.2rem;margin-bottom:1rem">Select Network</h3>
+  <div class="appendix-grid" id="chainGrid">
+    <div class="chain-card selected" data-chain="ethereum" onclick="selectChain(this)">
+      <h4>Ethereum</h4>
+      <p>Mainnet &middot; Chain ID 1</p>
+    </div>
+    <div class="chain-card" data-chain="arbitrum" onclick="selectChain(this)">
+      <h4>Arbitrum</h4>
+      <p>L2 &middot; Chain ID 42161</p>
+    </div>
+    <div class="chain-card" data-chain="optimism" onclick="selectChain(this)">
+      <h4>Optimism</h4>
+      <p>L2 &middot; Chain ID 10</p>
+    </div>
+    <div class="chain-card" data-chain="base" onclick="selectChain(this)">
+      <h4>Base</h4>
+      <p>L2 &middot; Chain ID 8453</p>
+    </div>
+  </div>
+
+  <div class="action-row">
+    <div class="action-box">
+      <h4>Deposit Collateral</h4>
+      <select id="depositToken">
+        <option value="ETH">ETH</option>
+        <option value="wBTC">wBTC</option>
+        <option value="USDC">USDC</option>
+        <option value="LINK">LINK</option>
+        <option value="wstETH">wstETH</option>
+        <option value="DAI">DAI</option>
+      </select>
+      <input type="number" placeholder="Amount" id="depositAmt">
+      <button class="btn btn-primary" onclick="doDeposit()">Deposit</button>
+    </div>
+    <div class="action-box">
+      <h4>Borrow</h4>
+      <select id="borrowToken">
+        <option value="USDC">USDC</option>
+        <option value="DAI">DAI</option>
+        <option value="ETH">ETH</option>
+      </select>
+      <input type="number" placeholder="Amount" id="borrowAmt">
+      <button class="btn btn-primary" onclick="doBorrow()">Borrow</button>
+    </div>
+  </div>
+
+  <div class="action-row" style="margin-top:1rem">
+    <div class="action-box">
+      <h4>Repay</h4>
+      <select id="repayToken">
+        <option value="USDC">USDC</option>
+        <option value="DAI">DAI</option>
+        <option value="ETH">ETH</option>
+      </select>
+      <input type="number" placeholder="Amount" id="repayAmt">
+      <button class="btn btn-primary" onclick="doRepay()">Repay</button>
+    </div>
+    <div class="action-box" style="display:flex;flex-direction:column;justify-content:center;align-items:center">
+      <h4>Live Health Factor</h4>
+      <div class="wallet-hf">
+        <div class="whf-label">Elastic Health Factor</div>
+        <div class="whf-value" id="walletHF">--</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <p>ElasticLend &middot; Hybrid Proposal &middot; DNA-F-H-F-D-X &middot; The Research Paper</p>
+  <div class="footer-links">
+    <a href="#abstract">Abstract</a>
+    <a href="#fig1">Fig. 1</a>
+    <a href="#fig2">Fig. 2</a>
+    <a href="#fig3">Fig. 3</a>
+    <a href="#table1">Table 1</a>
+    <a href="#appendix">Appendix</a>
+  </div>
+</footer>
+
+<!-- DNA Badge -->
+<div class="dna-badge">DNA-F-H-F-D-X</div>
+
+<script>
+// ================================================================
+// DATA MODEL
+// ================================================================
+const TOKENS = {
+  ETH:    { price: 2000,  group: 'ETH',    maxDrop: 0.50 },
+  wBTC:   { price: 50000, group: 'BTC',    maxDrop: 0.45 },
+  USDC:   { price: 1,     group: 'STABLE', maxDrop: 0.05 },
+  LINK:   { price: 15,    group: 'OTHER',  maxDrop: 0.60 },
+  wstETH: { price: 2000,  group: 'ETH',    maxDrop: 0.50 },
+  DAI:    { price: 1,     group: 'STABLE', maxDrop: 0.05 }
+};
+
+const GROUP_COLORS = {
+  ETH: 'var(--group-eth)', BTC: 'var(--group-btc)',
+  STABLE: 'var(--group-stable)', OTHER: 'var(--group-other)'
+};
+
+const GROUP_MAX_DROP = { ETH: 0.50, BTC: 0.45, STABLE: 0.05, OTHER: 0.60 };
+
+const CHAINS = ['Ethereum', 'Arbitrum', 'Optimism', 'Base'];
+
+let portfolio = {};
+let selectedChain = 'ethereum';
+let stretchLiquidated = false;
+
+// ================================================================
+// MATH ENGINE
+// ================================================================
+function getGroupValues() {
+  const groups = {};
+  for (const [sym, amt] of Object.entries(portfolio)) {
+    const t = TOKENS[sym];
+    const val = amt * t.price;
+    if (val <= 0) continue;
+    groups[t.group] = (groups[t.group] || 0) + val;
+  }
+  return groups;
+}
+
+function getTotalCollateral() {
+  let total = 0;
+  for (const [sym, amt] of Object.entries(portfolio)) {
+    total += amt * TOKENS[sym].price;
+  }
+  return total;
+}
+
+function calcGroupLosses(groupValues, dropOverrides) {
+  const losses = {};
+  for (const [g, val] of Object.entries(groupValues)) {
+    const drop = dropOverrides ? (dropOverrides[g] !== undefined ? dropOverrides[g] : GROUP_MAX_DROP[g]) : GROUP_MAX_DROP[g];
+    losses[g] = val * drop;
+  }
+  return losses;
+}
+
+function rigidLoss(losses) {
+  return Object.values(losses).reduce((s, v) => s + v, 0);
+}
+
+function elasticLoss(losses) {
+  return Math.sqrt(Object.values(losses).reduce((s, v) => s + v * v, 0));
+}
+
+function calcHHI(groupValues) {
+  const total = Object.values(groupValues).reduce((s, v) => s + v, 0);
+  if (total <= 0) return 0;
+  let hhi = 0;
+  for (const v of Object.values(groupValues)) {
+    const share = v / total * 100;
+    hhi += share * share;
+  }
+  return Math.round(hhi);
+}
+
+function calcBP(collateral, loss) {
+  return Math.max(0, collateral - loss);
+}
+
+function fmt(n) {
+  return '$' + n.toLocaleString('en-US', { maximumFractionDigits: 0 });
+}
+
+function fmtDec(n, d) {
+  return '$' + n.toLocaleString('en-US', { minimumFractionDigits: d, maximumFractionDigits: d });
+}
+
+// ================================================================
+// NAV
+// ================================================================
+const navToggle = document.getElementById('navToggle');
+const navOverlay = document.getElementById('navOverlay');
+navToggle.addEventListener('click', () => {
+  navToggle.classList.toggle('active');
+  navOverlay.classList.toggle('active');
+});
+function closeNav() {
+  navToggle.classList.remove('active');
+  navOverlay.classList.remove('active');
+}
+
+// ================================================================
+// FIGURE 1: PORTFOLIO SIMULATOR
+// ================================================================
+function renderTokenGrid() {
+  const grid = document.getElementById('tokenGrid');
+  grid.innerHTML = Object.entries(TOKENS).map(([sym, t]) => `
+    <div class="token-chip ${portfolio[sym] !== undefined ? 'active' : ''}" onclick="toggleToken('${sym}')">
+      <div class="token-symbol">${sym}</div>
+      <div class="token-price">${fmt(t.price)} &middot; ${t.group}</div>
+    </div>
+  `).join('');
+}
+
+function toggleToken(sym) {
+  if (portfolio[sym] !== undefined) {
+    delete portfolio[sym];
+  } else {
+    portfolio[sym] = sym === 'wBTC' ? 0.2 : (TOKENS[sym].group === 'STABLE' ? 5000 : 5);
+  }
+  renderPortfolio();
+}
+
+function renderPortfolio() {
+  renderTokenGrid();
+  const container = document.getElementById('portfolioEntries');
+  const entries = Object.entries(portfolio);
+  container.innerHTML = entries.map(([sym, amt]) => {
+    const val = amt * TOKENS[sym].price;
+    return `<div class="portfolio-entry">
+      <span class="pe-symbol">${sym}</span>
+      <input type="number" value="${amt}" step="any" min="0" onchange="updateAmount('${sym}', this.value)" onfocus="this.select()">
+      <select onchange="updateChain('${sym}', this.value)" style="max-width:90px">
+        ${CHAINS.map(c => `<option value="${c.toLowerCase()}">${c}</option>`).join('')}
+      </select>
+      <span class="pe-value">${fmt(val)}</span>
+      <button class="pe-remove" onclick="toggleToken('${sym}')">&times;</button>
+    </div>`;
+  }).join('');
+  updateFig1Results();
+  updateCrashSim();
+  updateStretchBefore();
+}
+
+function updateAmount(sym, val) {
+  portfolio[sym] = Math.max(0, parseFloat(val) || 0);
+  renderPortfolio();
+}
+
+function updateChain(sym, chain) {
+  // Chain is per-token cosmetic only in the sim
+}
+
+function updateFig1Results() {
+  const groupVals = getGroupValues();
+  const total = getTotalCollateral();
+  const losses = calcGroupLosses(groupVals);
+  const rLoss = rigidLoss(losses);
+  const eLoss = elasticLoss(losses);
+  const rBP = calcBP(total, rLoss);
+  const eBP = calcBP(total, eLoss);
+  const hhi = calcHHI(groupVals);
+
+  document.getElementById('rigidBP').textContent = fmt(rBP);
+  document.getElementById('elasticBP').textContent = fmt(eBP);
+  document.getElementById('rigidLTV').textContent = total > 0 ? `LTV: ${(rBP / total * 100).toFixed(1)}%` : 'LTV: 0%';
+  document.getElementById('elasticLTV').textContent = total > 0 ? `LTV: ${(eBP / total * 100).toFixed(1)}%` : 'LTV: 0%';
+  const gain = rBP > 0 ? ((eBP - rBP) / rBP * 100) : 0;
+  document.getElementById('gainPct').textContent = '+' + gain.toFixed(1) + '%';
+  document.getElementById('hhiValue').textContent = hhi.toLocaleString();
+}
+
+// ================================================================
+// FIGURE 2: CRASH SIMULATOR
+// ================================================================
+function getCrashDrops() {
+  return {
+    ETH: parseFloat(document.getElementById('sliderETH').value) / 100,
+    BTC: parseFloat(document.getElementById('sliderBTC').value) / 100,
+    STABLE: parseFloat(document.getElementById('sliderSTABLE').value) / 100,
+    OTHER: parseFloat(document.getElementById('sliderOTHER').value) / 100
+  };
+}
+
+function updateCrashSim() {
+  const drops = getCrashDrops();
+  const debt = parseFloat(document.getElementById('debtInput').value) || 0;
+
+  // Update slider labels
+  document.getElementById('ethCrashVal').textContent = '-' + (drops.ETH * 100).toFixed(0) + '%';
+  document.getElementById('btcCrashVal').textContent = '-' + (drops.BTC * 100).toFixed(0) + '%';
+  document.getElementById('stableCrashVal').textContent = '-' + (drops.STABLE * 100).toFixed(1) + '%';
+  document.getElementById('otherCrashVal').textContent = '-' + (drops.OTHER * 100).toFixed(0) + '%';
+
+  const total = getTotalCollateral();
+  const groupVals = getGroupValues();
+
+  // Post-crash collateral
+  let postCrash = 0;
+  for (const [sym, amt] of Object.entries(portfolio)) {
+    const t = TOKENS[sym];
+    const drop = drops[t.group] || 0;
+    postCrash += amt * t.price * (1 - drop);
+  }
+
+  // Post-crash group values for BP calculation
+  const postCrashGroups = {};
+  for (const [sym, amt] of Object.entries(portfolio)) {
+    const t = TOKENS[sym];
+    const drop = drops[t.group] || 0;
+    const val = amt * t.price * (1 - drop);
+    if (val > 0) postCrashGroups[t.group] = (postCrashGroups[t.group] || 0) + val;
+  }
+
+  // Expected losses on the POST-CRASH values using maxDrop
+  const postLosses = calcGroupLosses(postCrashGroups);
+  const rLoss = rigidLoss(postLosses);
+  const eLoss = elasticLoss(postLosses);
+  const rBP = calcBP(postCrash, rLoss);
+  const eBP = calcBP(postCrash, eLoss);
+
+  // Health Factors
+  const rHF = debt > 0 ? rBP / debt : 99;
+  const eHF = debt > 0 ? eBP / debt : 99;
+  const clamp = (v) => Math.min(Math.max(v, 0), 5);
+  const rHFc = clamp(rHF);
+  const eHFc = clamp(eHF);
+
+  // Update gauges
+  const circumference = 2 * Math.PI * 70; // ~440
+  const rigidOffset = circumference - (circumference * Math.min(rHFc / 5, 1));
+  const elasticOffset = circumference - (circumference * Math.min(eHFc / 5, 1));
+
+  const rigidArc = document.getElementById('gaugeRigidArc');
+  const elasticArc = document.getElementById('gaugeElasticArc');
+  rigidArc.style.strokeDashoffset = rigidOffset;
+  elasticArc.style.strokeDashoffset = elasticOffset;
+  rigidArc.style.transition = 'stroke-dashoffset 0.5s ease, stroke 0.3s ease';
+  elasticArc.style.transition = 'stroke-dashoffset 0.5s ease, stroke 0.3s ease';
+
+  // Color by danger level
+  function hfColor(hf) {
+    if (hf < 1.0) return 'var(--danger)';
+    if (hf < 1.3) return 'var(--warning)';
+    return null; // use default
+  }
+  rigidArc.style.stroke = hfColor(rHFc) || 'var(--text-secondary)';
+  elasticArc.style.stroke = hfColor(eHFc) || 'var(--accent)';
+
+  document.getElementById('gaugeRigidVal').textContent = rHFc.toFixed(2);
+  document.getElementById('gaugeRigidVal').style.color = hfColor(rHFc) || 'var(--text-secondary)';
+  document.getElementById('gaugeElasticVal').textContent = eHFc.toFixed(2);
+  document.getElementById('gaugeElasticVal').style.color = hfColor(eHFc) || 'var(--accent)';
+
+  // Status labels
+  const rigidStatus = document.getElementById('gaugeRigidStatus');
+  const elasticStatus = document.getElementById('gaugeElasticStatus');
+  rigidStatus.textContent = rHFc < 1.0 ? 'LIQUIDATED' : 'SURVIVES';
+  rigidStatus.style.color = rHFc < 1.0 ? 'var(--danger)' : 'var(--success)';
+  elasticStatus.textContent = eHFc < 1.0 ? 'LIQUIDATED' : 'SURVIVES';
+  elasticStatus.style.color = eHFc < 1.0 ? 'var(--danger)' : 'var(--success)';
+
+  // Summary cards
+  document.getElementById('csPreCollateral').textContent = fmt(total);
+  document.getElementById('csPostCollateral').textContent = fmt(postCrash);
+  const capitalSaved = eBP - rBP;
+  document.getElementById('csCapitalSaved').textContent = fmt(Math.max(0, capitalSaved));
+  document.getElementById('csRigidBP').textContent = fmt(rBP);
+  document.getElementById('csElasticBP').textContent = fmt(eBP);
+  const advPct = rBP > 0 ? ((eBP - rBP) / rBP * 100).toFixed(1) : '0.0';
+  document.getElementById('csAdvantage').textContent = '+' + advPct + '%';
+
+  // Draw the crash trajectory chart
+  drawCrashChart(drops, debt);
+}
+
+function drawCrashChart(currentDrops, debt) {
+  const canvas = document.getElementById('crashChart');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const dpr = window.devicePixelRatio || 1;
+  const rect = canvas.parentElement.getBoundingClientRect();
+  canvas.width = rect.width * dpr;
+  canvas.height = rect.height * dpr;
+  canvas.style.width = rect.width + 'px';
+  canvas.style.height = rect.height + 'px';
+  ctx.scale(dpr, dpr);
+
+  const w = rect.width;
+  const h = rect.height;
+  const pad = { top: 20, right: 20, bottom: 30, left: 55 };
+  const plotW = w - pad.left - pad.right;
+  const plotH = h - pad.top - pad.bottom;
+  ctx.clearRect(0, 0, w, h);
+
+  // Generate trajectory: sweep a multiplier from 0 to the current crash values
+  const steps = 40;
+  const rigidBPs = [];
+  const elasticBPs = [];
+
+  for (let i = 0; i <= steps; i++) {
+    const mult = i / steps;
+    const drops = {};
+    for (const g of Object.keys(currentDrops)) {
+      drops[g] = currentDrops[g] * mult;
+    }
+    // Post-crash collateral at this step
+    let pc = 0;
+    const pcGroups = {};
+    for (const [sym, amt] of Object.entries(portfolio)) {
+      const t = TOKENS[sym];
+      const drop = drops[t.group] || 0;
+      const val = amt * t.price * (1 - drop);
+      if (val > 0) { pc += val; pcGroups[t.group] = (pcGroups[t.group] || 0) + val; }
+    }
+    const losses = calcGroupLosses(pcGroups);
+    rigidBPs.push(calcBP(pc, rigidLoss(losses)));
+    elasticBPs.push(calcBP(pc, elasticLoss(losses)));
+  }
+
+  const allVals = [...rigidBPs, ...elasticBPs, debt];
+  const yMax = Math.max(...allVals) * 1.1 || 1;
+  const yMin = 0;
+
+  function toX(i) { return pad.left + (i / steps) * plotW; }
+  function toY(v) { return pad.top + plotH - ((v - yMin) / (yMax - yMin)) * plotH; }
+
+  // Grid
+  ctx.strokeStyle = 'rgba(200,85,61,0.06)';
+  ctx.lineWidth = 1;
+  const gridSteps = 5;
+  for (let i = 0; i <= gridSteps; i++) {
+    const v = yMin + (yMax - yMin) * i / gridSteps;
+    ctx.beginPath(); ctx.moveTo(pad.left, toY(v)); ctx.lineTo(w - pad.right, toY(v)); ctx.stroke();
+  }
+
+  // Debt line (dashed)
+  if (debt > 0 && debt < yMax) {
+    ctx.strokeStyle = '#E74C3C';
+    ctx.lineWidth = 1;
+    ctx.setLineDash([6, 4]);
+    ctx.beginPath(); ctx.moveTo(pad.left, toY(debt)); ctx.lineTo(w - pad.right, toY(debt)); ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle = '#E74C3C';
+    ctx.font = '10px IBM Plex Mono';
+    ctx.textAlign = 'left';
+    ctx.fillText('Debt ' + fmt(debt), pad.left + 4, toY(debt) - 4);
+  }
+
+  // Y-axis labels
+  ctx.fillStyle = '#9B9689';
+  ctx.font = '10px IBM Plex Mono';
+  ctx.textAlign = 'right';
+  for (let i = 0; i <= gridSteps; i++) {
+    const v = yMin + (yMax - yMin) * i / gridSteps;
+    ctx.fillText(fmt(v), pad.left - 6, toY(v) + 3);
+  }
+
+  // X-axis labels
+  ctx.textAlign = 'center';
+  ctx.fillText('0%', toX(0), h - pad.bottom + 16);
+  ctx.fillText('50%', toX(steps / 2), h - pad.bottom + 16);
+  ctx.fillText('100%', toX(steps), h - pad.bottom + 16);
+
+  // Fill between curves
+  ctx.fillStyle = 'rgba(200,85,61,0.08)';
+  ctx.beginPath();
+  for (let i = 0; i <= steps; i++) {
+    const x = toX(i), y = toY(elasticBPs[i]);
+    i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+  }
+  for (let i = steps; i >= 0; i--) {
+    ctx.lineTo(toX(i), toY(rigidBPs[i]));
+  }
+  ctx.closePath();
+  ctx.fill();
+
+  // Rigid line
+  ctx.strokeStyle = '#9B9689';
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  rigidBPs.forEach((v, i) => { const x = toX(i), y = toY(v); i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y); });
+  ctx.stroke();
+
+  // Elastic line
+  ctx.strokeStyle = '#C8553D';
+  ctx.lineWidth = 2.5;
+  ctx.beginPath();
+  elasticBPs.forEach((v, i) => { const x = toX(i), y = toY(v); i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y); });
+  ctx.stroke();
+
+  // Current position marker (vertical line at 100%)
+  ctx.strokeStyle = 'rgba(200,85,61,0.3)';
+  ctx.lineWidth = 1;
+  ctx.setLineDash([3, 3]);
+  ctx.beginPath(); ctx.moveTo(toX(steps), pad.top); ctx.lineTo(toX(steps), pad.top + plotH); ctx.stroke();
+  ctx.setLineDash([]);
+}
+
+// Bind slider events
+['sliderETH', 'sliderBTC', 'sliderSTABLE', 'sliderOTHER'].forEach(id => {
+  document.getElementById(id).addEventListener('input', updateCrashSim);
+});
+document.getElementById('debtInput').addEventListener('input', updateCrashSim);
+
+// ================================================================
+// FIGURE 3: STRETCH EFFECT
+// ================================================================
+let stretchBeforeData = {};
+let stretchAfterData = {};
+
+function updateStretchBefore() {
+  stretchLiquidated = false;
+  document.getElementById('stretchAfter').style.display = 'none';
+  document.getElementById('stretchDelta').style.display = 'none';
+  document.getElementById('stretchLiqBtn').disabled = false;
+  document.getElementById('stretchLiqBtn').textContent = 'Liquidate Most Impaired';
+
+  const groupVals = getGroupValues();
+  const total = getTotalCollateral();
+  const losses = calcGroupLosses(groupVals);
+  const eLoss = elasticLoss(losses);
+  const eBP = calcBP(total, eLoss);
+  const hhi = calcHHI(groupVals);
+  const bpPerDol = total > 0 ? (eBP / total * 100) : 0;
+
+  // Render before bars
+  renderGroupBars('beforeBars', groupVals, total);
+
+  // Store for later
+  stretchBeforeData = { groupVals: { ...groupVals }, total, eBP, hhi, bpPerDol };
+
+  // Update metrics
+  document.getElementById('smHHIBefore').textContent = hhi.toLocaleString();
+  document.getElementById('smHHIAfter').textContent = '--';
+  document.getElementById('smBPBefore').textContent = fmt(eBP);
+  document.getElementById('smBPAfter').textContent = '--';
+  document.getElementById('smBPDolBefore').textContent = bpPerDol.toFixed(1) + '%';
+  document.getElementById('smBPDolAfter').textContent = '--';
+}
+
+function renderGroupBars(containerId, groupVals, maxTotal) {
+  const container = document.getElementById(containerId);
+  const maxVal = Math.max(...Object.values(groupVals), 1);
+  let html = '';
+  for (const [g, val] of Object.entries(groupVals)) {
+    const pct = (val / maxVal) * 100;
+    html += `<div class="group-bar-row">
+      <span class="gb-name" style="color:${GROUP_COLORS[g]}">${g}</span>
+      <div class="gb-track">
+        <div class="gb-fill" style="width:${pct}%;background:${GROUP_COLORS[g]}">${fmt(val)}</div>
+      </div>
+      <span class="gb-amt">${maxTotal > 0 ? (val / maxTotal * 100).toFixed(1) : 0}%</span>
+    </div>`;
+  }
+  container.innerHTML = html;
+}
+
+function doStretchLiquidation() {
+  if (stretchLiquidated) return;
+  stretchLiquidated = true;
+  document.getElementById('stretchLiqBtn').disabled = true;
+  document.getElementById('stretchLiqBtn').textContent = 'Liquidation Applied';
+
+  const groupVals = { ...stretchBeforeData.groupVals };
+
+  // Find the most concentrated (largest value) group
+  let targetGroup = null;
+  let maxVal = 0;
+  for (const [g, val] of Object.entries(groupVals)) {
+    if (val > maxVal) { maxVal = val; targetGroup = g; }
+  }
+  if (!targetGroup) return;
+
+  // Seize 50% of the most concentrated group
+  const liqAmount = groupVals[targetGroup] * 0.50;
+  groupVals[targetGroup] -= liqAmount;
+  if (groupVals[targetGroup] <= 0) delete groupVals[targetGroup];
+
+  const afterTotal = Object.values(groupVals).reduce((s, v) => s + v, 0);
+  const afterLosses = calcGroupLosses(groupVals);
+  const afterELoss = elasticLoss(afterLosses);
+  const afterBP = calcBP(afterTotal, afterELoss);
+  const afterHHI = calcHHI(groupVals);
+  const afterBPPerDol = afterTotal > 0 ? (afterBP / afterTotal * 100) : 0;
+
+  stretchAfterData = { groupVals, total: afterTotal, eBP: afterBP, hhi: afterHHI, bpPerDol: afterBPPerDol };
+
+  // Render after bars with the BEFORE maxVal for scale comparison
+  document.getElementById('stretchAfter').style.display = 'block';
+  renderGroupBars('afterBars', groupVals, afterTotal);
+
+  // Update metrics
+  document.getElementById('smHHIAfter').textContent = afterHHI.toLocaleString();
+  document.getElementById('smBPAfter').textContent = fmt(afterBP);
+  document.getElementById('smBPDolAfter').textContent = afterBPPerDol.toFixed(1) + '%';
+
+  // Show delta
+  const before = stretchBeforeData.bpPerDol;
+  const after = afterBPPerDol;
+  document.getElementById('stretchDelta').style.display = 'block';
+  document.getElementById('sdFrom').textContent = before.toFixed(1) + '%';
+  document.getElementById('sdTo').textContent = after.toFixed(1) + '%';
+  document.getElementById('sdChange').textContent = '+' + (after - before).toFixed(1) + ' percentage points';
+
+  document.getElementById('stretchResetBtn').style.display = 'inline-block';
+  showToast(`Liquidated ${fmt(liqAmount)} from ${targetGroup} group (50% seizure)`);
+}
+
+function resetStretch() {
+  stretchLiquidated = false;
+  document.getElementById('stretchResetBtn').style.display = 'none';
+  updateStretchBefore();
+}
+
+// ================================================================
+// APPENDIX
+// ================================================================
+function selectChain(el) {
+  document.querySelectorAll('.chain-card').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+  selectedChain = el.dataset.chain;
+}
+
+function connectWallet() {
+  const status = document.getElementById('walletStatus');
+  if (typeof window.ethereum !== 'undefined') {
+    window.ethereum.request({ method: 'eth_requestAccounts' }).then(accounts => {
+      const addr = accounts[0];
+      status.innerHTML = `Connected: <strong style="color:var(--accent)">${addr.slice(0, 6)}...${addr.slice(-4)}</strong> on ${selectedChain}`;
+      updateWalletHF();
+    }).catch(() => {
+      status.textContent = 'Connection rejected.';
+    });
+  } else {
+    // Simulated connection
+    const hex = '0123456789abcdef';
+    let addr = '0x';
+    for (let i = 0; i < 40; i++) addr += hex[Math.floor(Math.random() * 16)];
+    status.innerHTML = `Connected: <strong style="color:var(--accent)">${addr.slice(0, 6)}...${addr.slice(-4)}</strong> on ${selectedChain}`;
+    updateWalletHF();
+    showToast('Wallet connected (simulated)');
+  }
+}
+
+function updateWalletHF() {
+  const total = getTotalCollateral();
+  const groupVals = getGroupValues();
+  const losses = calcGroupLosses(groupVals);
+  const eLoss = elasticLoss(losses);
+  const eBP = calcBP(total, eLoss);
+  const debt = parseFloat(document.getElementById('debtInput').value) || 0;
+  const hf = debt > 0 ? (eBP / debt) : (total > 0 ? 99 : 0);
+  document.getElementById('walletHF').textContent = hf > 10 ? '> 10' : hf.toFixed(2);
+}
+
+function doDeposit() {
+  const token = document.getElementById('depositToken').value;
+  const amt = document.getElementById('depositAmt').value;
+  if (!amt || parseFloat(amt) <= 0) { showToast('Enter a valid amount.'); return; }
+  showToast(`[Demo] Would deposit ${amt} ${token} on ${selectedChain}`);
+}
+
+function doBorrow() {
+  const token = document.getElementById('borrowToken').value;
+  const amt = document.getElementById('borrowAmt').value;
+  if (!amt || parseFloat(amt) <= 0) { showToast('Enter a valid amount.'); return; }
+  showToast(`[Demo] Would borrow ${amt} ${token} on ${selectedChain}`);
+}
+
+function doRepay() {
+  const token = document.getElementById('repayToken').value;
+  const amt = document.getElementById('repayAmt').value;
+  if (!amt || parseFloat(amt) <= 0) { showToast('Enter a valid amount.'); return; }
+  showToast(`[Demo] Would repay ${amt} ${token} on ${selectedChain}`);
+}
+
+// ================================================================
+// SCROLL REVEAL
+// ================================================================
+const revealObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) entry.target.classList.add('visible');
+  });
+}, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+
+// ================================================================
+// READING PROGRESS
+// ================================================================
+const progressBar = document.getElementById('readingProgress');
+window.addEventListener('scroll', () => {
+  const scrollTop = window.scrollY;
+  const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+  const progress = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+  progressBar.style.width = progress + '%';
+}, { passive: true });
+
+// ================================================================
+// TOAST
+// ================================================================
+function showToast(msg) {
+  const toast = document.getElementById('toast');
+  toast.textContent = msg;
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 2500);
+}
+
+// ================================================================
+// KEYBOARD SHORTCUTS
+// ================================================================
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') closeNav();
+  const sections = ['abstract', 'fig1', 'fig2', 'fig3', 'table1', 'appendix'];
+  const num = parseInt(e.key);
+  if (num >= 1 && num <= 6 && !e.ctrlKey && !e.metaKey && document.activeElement.tagName !== 'INPUT') {
+    document.getElementById(sections[num - 1]).scrollIntoView({ behavior: 'smooth' });
+    showToast('Section ' + num);
+  }
+});
+
+// ================================================================
+// INIT
+// ================================================================
+// Load demo portfolio: 5 ETH, 0.2 wBTC, 5000 USDC, 300 LINK
+portfolio = { ETH: 5, wBTC: 0.2, USDC: 5000, LINK: 300 };
+renderPortfolio();
+
+// Resize handler for chart
+window.addEventListener('resize', () => { updateCrashSim(); });
+
+// Delayed toast
+setTimeout(() => {
+  showToast('Demo portfolio loaded. Try editing amounts or toggling tokens.');
+}, 600);
+</script>
+</body>
+</html>

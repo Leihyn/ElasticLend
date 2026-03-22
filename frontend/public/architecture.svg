@@ -1,0 +1,300 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1400 1100" font-family="'Courier New', monospace">
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#C8553D"/>
+    </marker>
+    <marker id="arrow-gray" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#6B6560"/>
+    </marker>
+    <marker id="arrow-green" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#2ECC71"/>
+    </marker>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1400" height="1100" fill="#0A0A0A"/>
+
+  <!-- Title -->
+  <text x="700" y="40" text-anchor="middle" fill="#E8E4DC" font-size="20" font-weight="bold">ElasticLend Architecture</text>
+  <text x="700" y="62" text-anchor="middle" fill="#9B9689" font-size="11" letter-spacing="3">CROSS-CHAIN PORTFOLIO-AWARE LENDING PROTOCOL</text>
+
+  <!-- ══════════════════════════════════════════════ -->
+  <!-- SOURCE CHAINS (Left Side) -->
+  <!-- ══════════════════════════════════════════════ -->
+
+  <!-- Source chain label -->
+  <text x="160" y="110" text-anchor="middle" fill="#C8553D" font-size="11" letter-spacing="2">SOURCE CHAINS</text>
+
+  <!-- Ethereum Escrow -->
+  <rect x="30" y="130" width="260" height="160" rx="4" fill="#141414" stroke="#C8553D" stroke-width="1.5" stroke-opacity="0.4"/>
+  <rect x="30" y="130" width="260" height="28" rx="4" fill="#1E1E1E"/>
+  <text x="45" y="149" fill="#C8553D" font-size="10" letter-spacing="1">ETHEREUM</text>
+  <text x="275" y="149" text-anchor="end" fill="#9B9689" font-size="9">Chain 1</text>
+
+  <text x="45" y="178" fill="#E8E4DC" font-size="11" font-weight="bold">ElasticLendEscrow</text>
+  <text x="45" y="198" fill="#9B9689" font-size="10">deposit(token, amount)</text>
+  <text x="45" y="214" fill="#9B9689" font-size="10">seize(user, token, amt, to)</text>
+  <text x="45" y="230" fill="#9B9689" font-size="10">emergencyWithdraw() [7-day]</text>
+  <text x="45" y="252" fill="#6B6560" font-size="9">Holds: aETH, wstETH, vault shares</text>
+  <text x="45" y="266" fill="#6B6560" font-size="9">Tokens keep earning yield</text>
+
+  <!-- Arbitrum Escrow -->
+  <rect x="30" y="310" width="260" height="130" rx="4" fill="#141414" stroke="#C8553D" stroke-width="1" stroke-opacity="0.3"/>
+  <rect x="30" y="310" width="260" height="28" rx="4" fill="#1E1E1E"/>
+  <text x="45" y="329" fill="#C8553D" font-size="10" letter-spacing="1">ARBITRUM</text>
+  <text x="275" y="329" text-anchor="end" fill="#9B9689" font-size="9">Chain 42161</text>
+
+  <text x="45" y="358" fill="#E8E4DC" font-size="11" font-weight="bold">ElasticLendEscrow</text>
+  <text x="45" y="378" fill="#9B9689" font-size="10">Same interface as Ethereum</text>
+  <text x="45" y="398" fill="#6B6560" font-size="9">Holds: GMX, Vault shares, LP tokens</text>
+  <text x="45" y="412" fill="#6B6560" font-size="9">Protocol-agnostic (any ERC-20)</text>
+
+  <!-- Optimism Escrow -->
+  <rect x="30" y="460" width="260" height="110" rx="4" fill="#141414" stroke="#C8553D" stroke-width="1" stroke-opacity="0.2"/>
+  <rect x="30" y="460" width="260" height="28" rx="4" fill="#1E1E1E"/>
+  <text x="45" y="479" fill="#C8553D" font-size="10" letter-spacing="1">OPTIMISM</text>
+  <text x="275" y="479" text-anchor="end" fill="#9B9689" font-size="9">Chain 10</text>
+
+  <text x="45" y="508" fill="#E8E4DC" font-size="11" font-weight="bold">ElasticLendEscrow</text>
+  <text x="45" y="528" fill="#9B9689" font-size="10">Same interface</text>
+  <text x="45" y="548" fill="#6B6560" font-size="9">Holds: USDC vaults, DAI positions</text>
+
+  <!-- ══════════════════════════════════════════════ -->
+  <!-- ORACLE LAYER (Middle) -->
+  <!-- ══════════════════════════════════════════════ -->
+
+  <rect x="330" y="180" width="140" height="360" rx="4" fill="none" stroke="#C8553D" stroke-width="1" stroke-dasharray="6 4" stroke-opacity="0.5"/>
+  <text x="400" y="200" text-anchor="middle" fill="#C8553D" font-size="10" letter-spacing="2">ORACLE</text>
+  <text x="400" y="216" text-anchor="middle" fill="#C8553D" font-size="10" letter-spacing="2">LAYER</text>
+
+  <text x="400" y="250" text-anchor="middle" fill="#9B9689" font-size="9">Reads escrow</text>
+  <text x="400" y="264" text-anchor="middle" fill="#9B9689" font-size="9">balances on</text>
+  <text x="400" y="278" text-anchor="middle" fill="#9B9689" font-size="9">source chains</text>
+
+  <text x="400" y="320" text-anchor="middle" fill="#E8E4DC" font-size="10">attestCrossChain</text>
+  <text x="400" y="336" text-anchor="middle" fill="#E8E4DC" font-size="10">Position()</text>
+
+  <line x1="345" y1="355" x2="455" y2="355" stroke="#C8553D" stroke-width="0.5" stroke-opacity="0.3"/>
+
+  <text x="400" y="380" text-anchor="middle" fill="#9B9689" font-size="9">Executes</text>
+  <text x="400" y="394" text-anchor="middle" fill="#9B9689" font-size="9">cross-chain</text>
+  <text x="400" y="408" text-anchor="middle" fill="#9B9689" font-size="9">seizures</text>
+
+  <text x="400" y="445" text-anchor="middle" fill="#6B6560" font-size="8">Hackathon: admin</text>
+  <text x="400" y="459" text-anchor="middle" fill="#6B6560" font-size="8">Production: CCIP,</text>
+  <text x="400" y="473" text-anchor="middle" fill="#6B6560" font-size="8">LayerZero, Hyperbridge</text>
+
+  <text x="400" y="510" text-anchor="middle" fill="#6B6560" font-size="8">TTL: 1 hour</text>
+  <text x="400" y="524" text-anchor="middle" fill="#6B6560" font-size="8">Stale = excluded</text>
+
+  <!-- Oracle arrows -->
+  <!-- Escrow to Oracle -->
+  <line x1="290" y1="210" x2="330" y2="260" stroke="#C8553D" stroke-width="1.5" marker-end="url(#arrow)" stroke-opacity="0.6"/>
+  <line x1="290" y1="370" x2="330" y2="340" stroke="#C8553D" stroke-width="1" marker-end="url(#arrow)" stroke-opacity="0.4"/>
+  <line x1="290" y1="510" x2="330" y2="420" stroke="#C8553D" stroke-width="1" marker-end="url(#arrow)" stroke-opacity="0.3"/>
+
+  <!-- Oracle to Hub -->
+  <line x1="470" y1="300" x2="520" y2="250" stroke="#C8553D" stroke-width="2" marker-end="url(#arrow)"/>
+  <text x="500" y="260" fill="#C8553D" font-size="8" transform="rotate(-20 500 260)">attest</text>
+
+  <!-- Seizure back arrow -->
+  <line x1="470" y1="400" x2="330" y2="400" stroke="#E74C3C" stroke-width="1" marker-end="url(#arrow)" stroke-dasharray="4 3" stroke-opacity="0.5"/>
+  <text x="400" y="395" text-anchor="middle" fill="#E74C3C" font-size="7">seize</text>
+
+  <!-- ══════════════════════════════════════════════ -->
+  <!-- HUB CHAIN (Right Side) -->
+  <!-- ══════════════════════════════════════════════ -->
+
+  <!-- Hub chain label -->
+  <text x="830" y="110" text-anchor="middle" fill="#C8553D" font-size="11" letter-spacing="2">HUB CHAIN (BASE)</text>
+  <text x="830" y="126" text-anchor="middle" fill="#9B9689" font-size="9">Chain 84532</text>
+
+  <!-- ── ElasticCollateralManager ── -->
+  <rect x="520" y="145" width="620" height="250" rx="4" fill="#141414" stroke="#C8553D" stroke-width="2"/>
+  <rect x="520" y="145" width="620" height="30" rx="4" fill="#C8553D" fill-opacity="0.15"/>
+  <text x="535" y="165" fill="#C8553D" font-size="12" font-weight="bold" letter-spacing="1">ELASTIC COLLATERAL MANAGER</text>
+  <text x="1125" y="165" text-anchor="end" fill="#9B9689" font-size="9">Core Research Contribution</text>
+
+  <!-- Storage -->
+  <rect x="535" y="185" width="280" height="90" rx="3" fill="#1E1E1E" stroke="#C8553D" stroke-width="0.5" stroke-opacity="0.2"/>
+  <text x="545" y="200" fill="#9B9689" font-size="9" letter-spacing="1">STORAGE</text>
+  <text x="545" y="218" fill="#E8E4DC" font-size="10">localDeposits[user][token]</text>
+  <text x="545" y="234" fill="#E8E4DC" font-size="10">crossChainPositions[user][]</text>
+  <text x="545" y="250" fill="#E8E4DC" font-size="10">tokenConfigs[token].riskGroup</text>
+  <text x="545" y="266" fill="#E8E4DC" font-size="10">tokenConfigs[token].maxDropBps</text>
+
+  <!-- Elastic Math -->
+  <rect x="830" y="185" width="295" height="90" rx="3" fill="#1E1E1E" stroke="#C8553D" stroke-width="1" stroke-opacity="0.5"/>
+  <text x="840" y="200" fill="#C8553D" font-size="9" letter-spacing="1">ELASTIC MATH (PAPER's CORE)</text>
+  <text x="840" y="220" fill="#E8E4DC" font-size="10">1. Group by risk: ETH|BTC|STABLE|OTHER</text>
+  <text x="840" y="236" fill="#E8E4DC" font-size="10">2. EL_g = groupValue * maxDrop</text>
+  <text x="840" y="252" fill="#E8E4DC" font-size="10">3. loss = sqrt(sum(EL_g ^ 2))</text>
+  <text x="840" y="268" fill="#C8553D" font-size="10" font-weight="bold">4. BP = totalCollateral - loss</text>
+
+  <!-- Functions -->
+  <rect x="535" y="285" width="280" height="100" rx="3" fill="#1E1E1E" stroke="#C8553D" stroke-width="0.5" stroke-opacity="0.2"/>
+  <text x="545" y="300" fill="#9B9689" font-size="9" letter-spacing="1">FUNCTIONS</text>
+  <text x="545" y="318" fill="#2ECC71" font-size="10">getElasticBorrowingPower(user)</text>
+  <text x="545" y="334" fill="#9B9689" font-size="10">getRigidBorrowingPower(user)</text>
+  <text x="545" y="350" fill="#E8E4DC" font-size="10">getConcentrationDegree(user)</text>
+  <text x="545" y="366" fill="#E8E4DC" font-size="10">attestCrossChainPosition()</text>
+  <text x="545" y="382" fill="#E8E4DC" font-size="10">depositLocal() / withdrawLocal()</text>
+
+  <!-- HHI Box -->
+  <rect x="830" y="285" width="295" height="100" rx="3" fill="#1E1E1E" stroke="#C8553D" stroke-width="0.5" stroke-opacity="0.2"/>
+  <text x="840" y="300" fill="#9B9689" font-size="9" letter-spacing="1">CONCENTRATION (HHI)</text>
+  <text x="840" y="320" fill="#E8E4DC" font-size="10">HHI = sum(share_g^2)</text>
+  <text x="840" y="340" fill="#E74C3C" font-size="10">10,000 = all in one group</text>
+  <text x="840" y="356" fill="#2ECC71" font-size="10">2,500 = equal across 4 groups</text>
+  <text x="840" y="376" fill="#9B9689" font-size="9">Drives: borrowing power + liq bonus</text>
+
+  <!-- ── ElasticLendingPool ── -->
+  <rect x="520" y="415" width="350" height="200" rx="4" fill="#141414" stroke="#C8553D" stroke-width="1.5"/>
+  <rect x="520" y="415" width="350" height="28" rx="4" fill="#1E1E1E"/>
+  <text x="535" y="434" fill="#E8E4DC" font-size="11" font-weight="bold">ElasticLendingPool (ERC-4626)</text>
+
+  <text x="535" y="462" fill="#9B9689" font-size="9" letter-spacing="1">LP SIDE</text>
+  <text x="535" y="478" fill="#E8E4DC" font-size="10">deposit(usdc) --> vault shares</text>
+  <text x="535" y="494" fill="#E8E4DC" font-size="10">withdraw(shares) --> usdc</text>
+
+  <line x1="535" y1="504" x2="855" y2="504" stroke="#C8553D" stroke-width="0.5" stroke-opacity="0.2"/>
+
+  <text x="535" y="522" fill="#9B9689" font-size="9" letter-spacing="1">BORROWER SIDE</text>
+  <text x="535" y="538" fill="#E8E4DC" font-size="10">borrow(amount) [GREEN zone only]</text>
+  <text x="535" y="554" fill="#E8E4DC" font-size="10">repay(amount)</text>
+  <text x="535" y="570" fill="#E8E4DC" font-size="10">getElasticHealthFactor(user)</text>
+
+  <!-- Health Zones -->
+  <rect x="535" y="580" width="320" height="28" rx="2" fill="#1E1E1E"/>
+  <rect x="537" y="582" width="75" height="24" rx="2" fill="#2ECC71" fill-opacity="0.2"/>
+  <text x="575" y="599" text-anchor="middle" fill="#2ECC71" font-size="9">GREEN</text>
+  <rect x="614" y="582" width="75" height="24" rx="2" fill="#F7DC6F" fill-opacity="0.2"/>
+  <text x="652" y="599" text-anchor="middle" fill="#F7DC6F" font-size="9">YELLOW</text>
+  <rect x="691" y="582" width="75" height="24" rx="2" fill="#E67E22" fill-opacity="0.2"/>
+  <text x="729" y="599" text-anchor="middle" fill="#E67E22" font-size="9">ORANGE</text>
+  <rect x="768" y="582" width="75" height="24" rx="2" fill="#E74C3C" fill-opacity="0.2"/>
+  <text x="806" y="599" text-anchor="middle" fill="#E74C3C" font-size="9">RED</text>
+
+  <!-- Interest Rate Model (small) -->
+  <rect x="890" y="415" width="250" height="80" rx="4" fill="#141414" stroke="#C8553D" stroke-width="1" stroke-opacity="0.5"/>
+  <rect x="890" y="415" width="250" height="24" rx="4" fill="#1E1E1E"/>
+  <text x="905" y="432" fill="#E8E4DC" font-size="10" font-weight="bold">InterestRateModel</text>
+  <text x="905" y="456" fill="#9B9689" font-size="9">Base: 2% | Slope1: 20% | Slope2: 100%</text>
+  <text x="905" y="472" fill="#9B9689" font-size="9">Optimal utilization: 80%</text>
+  <text x="905" y="488" fill="#6B6560" font-size="9">Kink model (same as Aave/Compound)</text>
+
+  <!-- ── ElasticLiquidationEngine ── -->
+  <rect x="520" y="640" width="350" height="220" rx="4" fill="#141414" stroke="#E74C3C" stroke-width="1.5"/>
+  <rect x="520" y="640" width="350" height="28" rx="4" fill="#1E1E1E"/>
+  <text x="535" y="659" fill="#E74C3C" font-size="11" font-weight="bold">ElasticLiquidationEngine</text>
+
+  <text x="535" y="690" fill="#2ECC71" font-size="9" letter-spacing="1">TIER 1: LOCAL (TRUSTLESS)</text>
+  <text x="535" y="708" fill="#E8E4DC" font-size="10">liquidateLocal(borrower, debt, token)</text>
+  <text x="535" y="724" fill="#9B9689" font-size="9">Seize local collateral instantly</text>
+  <text x="535" y="738" fill="#9B9689" font-size="9">Transfer tokens to liquidator</text>
+
+  <line x1="535" y1="748" x2="855" y2="748" stroke="#E74C3C" stroke-width="0.5" stroke-opacity="0.3"/>
+
+  <text x="535" y="770" fill="#E67E22" font-size="9" letter-spacing="1">TIER 2: CROSS-CHAIN (ORACLE)</text>
+  <text x="535" y="788" fill="#E8E4DC" font-size="10">liquidateCrossChain(borrower, debt, idx)</text>
+  <text x="535" y="804" fill="#9B9689" font-size="9">Backstop pays liquidator instantly</text>
+  <text x="535" y="818" fill="#9B9689" font-size="9">Emit CrossChainSeizureRequested</text>
+  <text x="535" y="832" fill="#9B9689" font-size="9">Oracle executes on source chain</text>
+
+  <text x="535" y="852" fill="#6B6560" font-size="9">Bonus: 5% (diversified) to 10% (concentrated)</text>
+
+  <!-- ── BackstopPool ── -->
+  <rect x="890" y="640" width="250" height="220" rx="4" fill="#141414" stroke="#E67E22" stroke-width="1.5"/>
+  <rect x="890" y="640" width="250" height="28" rx="4" fill="#1E1E1E"/>
+  <text x="905" y="659" fill="#E67E22" font-size="11" font-weight="bold">BackstopPool</text>
+
+  <text x="905" y="690" fill="#9B9689" font-size="9" letter-spacing="1">USDC RESERVE</text>
+  <text x="905" y="710" fill="#E8E4DC" font-size="10">payLiquidator(addr, amt)</text>
+  <text x="905" y="726" fill="#E8E4DC" font-size="10">replenish(seizureId, amt)</text>
+  <text x="905" y="746" fill="#E8E4DC" font-size="10">isHealthy()</text>
+
+  <line x1="905" y1="756" x2="1125" y2="756" stroke="#E67E22" stroke-width="0.5" stroke-opacity="0.3"/>
+
+  <text x="905" y="778" fill="#9B9689" font-size="9" letter-spacing="1">DYNAMIC PREMIUM</text>
+  <text x="905" y="796" fill="#2ECC71" font-size="10">0% util: 5% premium</text>
+  <text x="905" y="812" fill="#E67E22" font-size="10">50% util: 10% premium</text>
+  <text x="905" y="828" fill="#E74C3C" font-size="10">100% util: 15% premium</text>
+
+  <text x="905" y="852" fill="#E74C3C" font-size="9">Emergency: blocks cross-chain liq</text>
+
+  <!-- ══════════════════════════════════════════════ -->
+  <!-- ARROWS / DATA FLOW -->
+  <!-- ══════════════════════════════════════════════ -->
+
+  <!-- CollateralManager -> LendingPool -->
+  <line x1="700" y1="395" x2="700" y2="415" stroke="#C8553D" stroke-width="2" marker-end="url(#arrow)"/>
+  <text x="715" y="408" fill="#C8553D" font-size="8">getBorrowingPower()</text>
+
+  <!-- LendingPool -> LiquidationEngine -->
+  <line x1="700" y1="615" x2="700" y2="640" stroke="#E74C3C" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <text x="715" y="630" fill="#E74C3C" font-size="8">getHealthFactor()</text>
+
+  <!-- LiquidationEngine -> BackstopPool -->
+  <line x1="870" y1="780" x2="890" y2="780" stroke="#E67E22" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <text x="878" y="772" fill="#E67E22" font-size="7" transform="rotate(-90 878 772)">pay</text>
+
+  <!-- LiquidationEngine -> CollateralManager (seize) -->
+  <line x1="520" y1="720" x2="500" y2="720" stroke="#E74C3C" stroke-width="1" stroke-opacity="0.5"/>
+  <line x1="500" y1="720" x2="500" y2="350" stroke="#E74C3C" stroke-width="1" stroke-opacity="0.5"/>
+  <line x1="500" y1="350" x2="520" y2="350" stroke="#E74C3C" stroke-width="1" marker-end="url(#arrow)" stroke-opacity="0.5"/>
+  <text x="490" y="530" fill="#E74C3C" font-size="8" transform="rotate(-90 490 530)">seizeLocal() / reduceCrossChain()</text>
+
+  <!-- InterestRateModel -> LendingPool -->
+  <line x1="1015" y1="495" x2="1015" y2="520" stroke="#9B9689" stroke-width="1" stroke-opacity="0.4"/>
+  <line x1="1015" y1="520" x2="870" y2="520" stroke="#9B9689" stroke-width="1" marker-end="url(#arrow-gray)" stroke-opacity="0.4"/>
+  <text x="945" y="515" fill="#9B9689" font-size="7">getRate()</text>
+
+  <!-- ══════════════════════════════════════════════ -->
+  <!-- USER FLOWS (Bottom) -->
+  <!-- ══════════════════════════════════════════════ -->
+
+  <text x="700" y="910" text-anchor="middle" fill="#C8553D" font-size="11" letter-spacing="2">USER FLOWS</text>
+
+  <!-- Deposit flow -->
+  <rect x="30" y="935" width="300" height="130" rx="4" fill="#141414" stroke="#2ECC71" stroke-width="1" stroke-opacity="0.5"/>
+  <text x="45" y="955" fill="#2ECC71" font-size="10" letter-spacing="1">DEPOSIT + BORROW</text>
+  <text x="45" y="978" fill="#E8E4DC" font-size="9">1. Deposit tokens into escrow (source chain)</text>
+  <text x="45" y="994" fill="#E8E4DC" font-size="9">2. Oracle attests balance to hub</text>
+  <text x="45" y="1010" fill="#E8E4DC" font-size="9">3. Deposit local collateral on hub</text>
+  <text x="45" y="1026" fill="#E8E4DC" font-size="9">4. Elastic model calculates BP</text>
+  <text x="45" y="1042" fill="#E8E4DC" font-size="9">5. Borrow USDC (if GREEN zone)</text>
+  <text x="45" y="1058" fill="#6B6560" font-size="8">Diversified = more BP, lower liq bonus</text>
+
+  <!-- Crash flow -->
+  <rect x="370" y="935" width="300" height="130" rx="4" fill="#141414" stroke="#E74C3C" stroke-width="1" stroke-opacity="0.5"/>
+  <text x="385" y="955" fill="#E74C3C" font-size="10" letter-spacing="1">CRASH + LIQUIDATION</text>
+  <text x="385" y="978" fill="#E8E4DC" font-size="9">1. ETH crashes 40%</text>
+  <text x="385" y="994" fill="#E8E4DC" font-size="9">2. Rigid HF: 0.78 (LIQUIDATED)</text>
+  <text x="385" y="1010" fill="#E8E4DC" font-size="9">3. Elastic HF: 1.00 (SURVIVES)</text>
+  <text x="385" y="1026" fill="#E8E4DC" font-size="9">4. If liquidated: Tier 1 local first</text>
+  <text x="385" y="1042" fill="#E8E4DC" font-size="9">5. Then Tier 2 cross-chain if needed</text>
+  <text x="385" y="1058" fill="#6B6560" font-size="8">Backstop covers cross-chain gap</text>
+
+  <!-- Stretch flow -->
+  <rect x="710" y="935" width="300" height="130" rx="4" fill="#141414" stroke="#C8553D" stroke-width="1" stroke-opacity="0.5"/>
+  <text x="725" y="955" fill="#C8553D" font-size="10" letter-spacing="1">STRETCH EFFECT (SEC. 3.4)</text>
+  <text x="725" y="978" fill="#E8E4DC" font-size="9">1. Most impaired collateral seized</text>
+  <text x="725" y="994" fill="#E8E4DC" font-size="9">2. Portfolio rebalances toward safe</text>
+  <text x="725" y="1010" fill="#E8E4DC" font-size="9">3. HHI may change</text>
+  <text x="725" y="1026" fill="#E8E4DC" font-size="9">4. BP per dollar INCREASES</text>
+  <text x="725" y="1042" fill="#E8E4DC" font-size="9">5. Remaining collateral "stretched"</text>
+  <text x="725" y="1058" fill="#6B6560" font-size="8">Elastic slashing applied to lending</text>
+
+  <!-- Trust model -->
+  <rect x="1050" y="935" width="300" height="130" rx="4" fill="#141414" stroke="#9B9689" stroke-width="1" stroke-opacity="0.3"/>
+  <text x="1065" y="955" fill="#9B9689" font-size="10" letter-spacing="1">TRUST MODEL</text>
+  <text x="1065" y="978" fill="#2ECC71" font-size="9">TRUSTLESS:</text>
+  <text x="1065" y="994" fill="#E8E4DC" font-size="9">  Elastic math, Tier 1 liquidation,</text>
+  <text x="1065" y="1010" fill="#E8E4DC" font-size="9">  health zones, withdrawal safety</text>
+  <text x="1065" y="1030" fill="#E67E22" font-size="9">TRUSTED (oracle):</text>
+  <text x="1065" y="1046" fill="#E8E4DC" font-size="9">  Cross-chain attestation,</text>
+  <text x="1065" y="1062" fill="#E8E4DC" font-size="9">  cross-chain seizure execution</text>
+
+  <!-- Paper reference -->
+  <text x="700" y="1092" text-anchor="middle" fill="#6B6560" font-size="9">Based on: Bar-Zur & Eyal, "Elastic Restaking Networks," ACM CCS 2025 | arXiv:2503.00170</text>
+</svg>
