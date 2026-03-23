@@ -19,3 +19,21 @@ docs/
 # Dev artifacts
 frontend/public/logos.html
 frontend/public/project-logo.html
+frontend/public/video/
+frontend/public/project-image.png
+frontend/public/.vercel/
+frontend/public/.gitignore
+
+# Node
+node_modules/
+video/node_modules/
+video/out/
+video/public/recording.*
+
+# OS
+.DS_Store
+*.lock
+foundry.lock
+
+# Vercel
+.vercel/
